@@ -25,7 +25,7 @@ const mockServices: Service[] = [
   { id: 5, name: "Vacunación", category: "vacuna", duration: 30, price: 50, location: "Todas", active: true },
   { id: 6, name: "Control de Rutina", category: "control", duration: 45, price: 60, location: "Todas", active: true },
   { id: 7, name: "Desparasitación", category: "control", duration: 30, price: 40, location: "Todas", active: true },
-  { id: 8, name: "Cirugía Menor", category: "cirugia", duration: 120, price: 300, location: "Surco/Barranco", active: true },
+  { id: 8, name: "Cirugía Menor", category: "cirugia", duration: 120, price: 300, location: "Sede Surco / Barranco", active: true },
 ];
 
 export function ServicesPage() {
@@ -259,8 +259,8 @@ export function ServicesPage() {
             fullWidth
             options={[
               { value: "Todas", label: "Todas las sedes" },
-              { value: "Chorrillos", label: "Chorrillos" },
-              { value: "Surco/Barranco", label: "Surco/Barranco" },
+              { value: "Sede Chorrillos", label: "Sede Chorrillos" },
+              { value: "Sede Surco / Barranco", label: "Sede Surco / Barranco" },
             ]}
             value={formData.location}
             onChange={(e) => setFormData({ ...formData, location: e.target.value })}

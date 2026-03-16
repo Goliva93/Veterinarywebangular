@@ -5,10 +5,11 @@ import { MaterialButton } from "../../components/material-button";
 import { MaterialTextField } from "../../components/material-text-field";
 import { MaterialSelect } from "../../components/material-select";
 import { MaterialStepper } from "../../components/material-stepper";
-import { Search, ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { Search, ArrowLeft, ArrowRight, Check, MapPin, User, Heart, Scissors } from "lucide-react";
 import { toast } from "sonner";
 
 const steps = [
+  { label: "Sede", description: "Seleccionar sede" },
   { label: "Cliente", description: "Seleccionar cliente" },
   { label: "Mascota", description: "Elegir mascota" },
   { label: "Servicio", description: "Tipo de servicio" },
@@ -28,21 +29,50 @@ const mockPets = [
   { id: 3, clientId: 2, name: "Rocky", species: "Perro", breed: "Golden Retriever", age: "5 años" },
 ];
 
+const mockServices = [
+  { id: 1, name: "Consulta General", category: "consulta", duration: "60 min", price: "S/ 80" },
+  { id: 2, name: "Grooming Básico", category: "grooming", duration: "120 min", price: "S/ 60" },
+  { id: 3, name: "Vacunación", category: "vacuna", duration: "30 min", price: "S/ 50" },
+  { id: 4, name: "Control de Rutina", category: "control", duration: "45 min", price: "S/ 60" },
+];
+
 export function NewAppointmentPage() {
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
+    location: "",
     client: "",
     pet: "",
     service: "",
     professional: "",
-    location: "",
     date: "",
     time: "",
     notes: "",
   });
 
   const handleNext = () => {
+    // Validaciones por paso
+    if (activeStep === 0 && !formData.location) {
+      toast.error("Por favor selecciona una sede");
+      return;
+    }
+    if (activeStep === 1 && !formData.client) {
+      toast.error("Por favor selecciona un cliente");
+      return;
+    }
+    if (activeStep === 2 && !formData.pet) {
+      toast.error("Por favor selecciona una mascota");
+      return;
+    }
+    if (activeStep === 3 && !formData.service) {
+      toast.error("Por favor selecciona un servicio");
+      return;
+    }
+    if (activeStep === 4 && (!formData.date || !formData.time)) {
+      toast.error("Por favor selecciona fecha y hora");
+      return;
+    }
+
     if (activeStep < steps.length - 1) {
       setActiveStep(activeStep + 1);
     }
@@ -62,6 +92,7 @@ export function NewAppointmentPage() {
   const selectedClient = mockClients.find(c => c.id === Number(formData.client));
   const filteredPets = mockPets.filter(p => p.clientId === Number(formData.client));
   const selectedPet = mockPets.find(p => p.id === Number(formData.pet));
+  const selectedService = mockServices.find(s => s.id === Number(formData.service));
 
   return (
     <div className="p-4 md:p-6 max-w-[1000px] mx-auto">
@@ -86,10 +117,63 @@ export function NewAppointmentPage() {
       {/* Form Steps */}
       <MaterialCard>
         <MaterialCardContent className="p-6">
-          {/* Step 1: Client */}
+          {/* Step 0: Location */}
           {activeStep === 0 && (
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold mb-4">Seleccionar Cliente</h3>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-[#7cb342]/10 flex items-center justify-center">
+                  <MapPin className="w-6 h-6 text-[#7cb342]" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold">Seleccionar Sede</h3>
+                  <p className="text-sm text-muted-foreground">Elige la sede donde se realizará la atención</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, location: "chorrillos" })}
+                  className={`p-6 rounded-xl border-2 transition-all text-left ${
+                    formData.location === "chorrillos"
+                      ? "border-[#7cb342] bg-[#7cb342]/10"
+                      : "border-border hover:border-[#7cb342]/50"
+                  }`}
+                >
+                  <h4 className="text-lg font-semibold mb-2">Sede Chorrillos</h4>
+                  <p className="text-sm text-muted-foreground mb-3">Av. Principal 123, Chorrillos</p>
+                  <p className="text-xs text-muted-foreground">Horario: L-V 9:00-18:00, S 9:00-14:00</p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, location: "surco" })}
+                  className={`p-6 rounded-xl border-2 transition-all text-left ${
+                    formData.location === "surco"
+                      ? "border-[#7cb342] bg-[#7cb342]/10"
+                      : "border-border hover:border-[#7cb342]/50"
+                  }`}
+                >
+                  <h4 className="text-lg font-semibold mb-2">Sede Surco / Barranco</h4>
+                  <p className="text-sm text-muted-foreground mb-3">Calle Los Olivos 456, Surco</p>
+                  <p className="text-xs text-muted-foreground">Horario: L-V 10:00-19:00, S 10:00-15:00</p>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Step 1: Client */}
+          {activeStep === 1 && (
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-[#42a5f5]/10 flex items-center justify-center">
+                  <User className="w-6 h-6 text-[#42a5f5]" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold">Seleccionar Cliente</h3>
+                  <p className="text-sm text-muted-foreground">Busca y selecciona al dueño de la mascota</p>
+                </div>
+              </div>
               
               <MaterialTextField
                 placeholder="Buscar por nombre, teléfono o email..."
@@ -99,175 +183,173 @@ export function NewAppointmentPage() {
 
               <div className="space-y-3">
                 {mockClients.map((client) => (
-                  <label
+                  <button
                     key={client.id}
-                    className={`
-                      block p-4 border-2 rounded-xl cursor-pointer transition-all
-                      ${formData.client === String(client.id)
-                        ? "border-[#7cb342] bg-[#7cb342]/5"
-                        : "border-border hover:border-[#7cb342]/50"
-                      }
-                    `}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, client: client.id.toString(), pet: "" })}
+                    className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                      formData.client === client.id.toString()
+                        ? "border-[#42a5f5] bg-[#42a5f5]/10"
+                        : "border-border hover:border-[#42a5f5]/50"
+                    }`}
                   >
-                    <input
-                      type="radio"
-                      name="client"
-                      value={client.id}
-                      checked={formData.client === String(client.id)}
-                      onChange={(e) => setFormData({ ...formData, client: e.target.value, pet: "" })}
-                      className="sr-only"
-                    />
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-[#42a5f5] text-white flex items-center justify-center font-semibold">
+                        {client.name.charAt(0)}
+                      </div>
                       <div>
-                        <p className="font-semibold text-foreground">{client.name}</p>
+                        <p className="font-semibold">{client.name}</p>
                         <p className="text-sm text-muted-foreground">{client.phone} • {client.email}</p>
                       </div>
-                      {formData.client === String(client.id) && (
-                        <Check className="w-5 h-5 text-[#7cb342]" />
-                      )}
                     </div>
-                  </label>
+                  </button>
                 ))}
               </div>
-
-              <MaterialButton variant="outlined" fullWidth>
-                + Crear nuevo cliente
-              </MaterialButton>
             </div>
           )}
 
           {/* Step 2: Pet */}
-          {activeStep === 1 && (
+          {activeStep === 2 && (
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold mb-4">Seleccionar Mascota</h3>
-              
-              <div className="p-4 bg-muted rounded-xl">
-                <p className="text-sm text-muted-foreground mb-1">Cliente seleccionado:</p>
-                <p className="font-semibold">{selectedClient?.name}</p>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-[#ef5350]/10 flex items-center justify-center">
+                  <Heart className="w-6 h-6 text-[#ef5350]" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold">Seleccionar Mascota</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedClient ? `Mascotas de ${selectedClient.name}` : "Selecciona una mascota"}
+                  </p>
+                </div>
               </div>
 
-              <div className="space-y-3">
-                {filteredPets.map((pet) => (
-                  <label
-                    key={pet.id}
-                    className={`
-                      block p-4 border-2 rounded-xl cursor-pointer transition-all
-                      ${formData.pet === String(pet.id)
-                        ? "border-[#7cb342] bg-[#7cb342]/5"
-                        : "border-border hover:border-[#7cb342]/50"
-                      }
-                    `}
-                  >
-                    <input
-                      type="radio"
-                      name="pet"
-                      value={pet.id}
-                      checked={formData.pet === String(pet.id)}
-                      onChange={(e) => setFormData({ ...formData, pet: e.target.value })}
-                      className="sr-only"
-                    />
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-semibold text-foreground">{pet.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {pet.species} • {pet.breed} • {pet.age}
-                        </p>
+              {filteredPets.length > 0 ? (
+                <div className="space-y-3">
+                  {filteredPets.map((pet) => (
+                    <button
+                      key={pet.id}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, pet: pet.id.toString() })}
+                      className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                        formData.pet === pet.id.toString()
+                          ? "border-[#ef5350] bg-[#ef5350]/10"
+                          : "border-border hover:border-[#ef5350]/50"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#ef5350] text-white flex items-center justify-center font-semibold">
+                          {pet.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-semibold">{pet.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {pet.species} • {pet.breed} • {pet.age}
+                          </p>
+                        </div>
                       </div>
-                      {formData.pet === String(pet.id) && (
-                        <Check className="w-5 h-5 text-[#7cb342]" />
-                      )}
-                    </div>
-                  </label>
-                ))}
-              </div>
-
-              <MaterialButton variant="outlined" fullWidth>
-                + Registrar nueva mascota
-              </MaterialButton>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>Este cliente no tiene mascotas registradas</p>
+                  <MaterialButton variant="text" className="mt-4">
+                    + Registrar nueva mascota
+                  </MaterialButton>
+                </div>
+              )}
             </div>
           )}
 
           {/* Step 3: Service */}
-          {activeStep === 2 && (
+          {activeStep === 3 && (
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold mb-4">Detalles del Servicio</h3>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-[#7cb342]/10 flex items-center justify-center">
+                  <Scissors className="w-6 h-6 text-[#7cb342]" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold">Seleccionar Servicio</h3>
+                  <p className="text-sm text-muted-foreground">Elige el tipo de atención</p>
+                </div>
+              </div>
 
-              <MaterialSelect
-                label="Tipo de Servicio"
-                fullWidth
-                options={[
-                  { value: "", label: "Selecciona un servicio" },
-                  { value: "consulta", label: "Consulta médica" },
-                  { value: "grooming", label: "Grooming" },
-                  { value: "control", label: "Control" },
-                  { value: "vacunacion", label: "Vacunación" },
-                  { value: "cirugia", label: "Cirugía" },
-                ]}
-                value={formData.service}
-                onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {mockServices.map((service) => (
+                  <button
+                    key={service.id}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, service: service.id.toString() })}
+                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      formData.service === service.id.toString()
+                        ? "border-[#7cb342] bg-[#7cb342]/10"
+                        : "border-border hover:border-[#7cb342]/50"
+                    }`}
+                  >
+                    <h4 className="font-semibold mb-2">{service.name}</h4>
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span>{service.duration}</span>
+                      <span className="font-semibold text-[#7cb342]">{service.price}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
 
-              <MaterialSelect
-                label="Profesional"
-                fullWidth
-                options={[
-                  { value: "", label: "Selecciona un profesional" },
-                  { value: "dr_rodriguez", label: "Dr. Rodríguez (Veterinario)" },
-                  { value: "dr_martinez", label: "Dr. Martínez (Veterinario)" },
-                  { value: "groomer_ana", label: "Ana López (Groomer)" },
-                ]}
-                value={formData.professional}
-                onChange={(e) => setFormData({ ...formData, professional: e.target.value })}
-              />
-
-              <MaterialSelect
-                label="Sede"
-                fullWidth
-                options={[
-                  { value: "", label: "Selecciona una sede" },
-                  { value: "surco", label: "Surco" },
-                  { value: "chorrillos", label: "Chorrillos" },
-                ]}
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              />
+              <div className="pt-4">
+                <MaterialSelect
+                  label="Profesional asignado"
+                  fullWidth
+                  options={[
+                    { value: "", label: "Seleccionar..." },
+                    { value: "1", label: "Dr. Carlos Méndez" },
+                    { value: "2", label: "Dra. Sofía Torres" },
+                    { value: "3", label: "Juan Pérez (Groomer)" },
+                  ]}
+                  value={formData.professional}
+                  onChange={(e) => setFormData({ ...formData, professional: e.target.value })}
+                />
+              </div>
             </div>
           )}
 
-          {/* Step 4: Date & Time */}
-          {activeStep === 3 && (
+          {/* Step 4: Date and Time */}
+          {activeStep === 4 && (
             <div className="space-y-6">
               <h3 className="text-xl font-semibold mb-4">Fecha y Hora</h3>
 
-              <MaterialTextField
-                label="Fecha"
-                type="date"
-                fullWidth
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <MaterialTextField
+                  label="Fecha"
+                  type="date"
+                  fullWidth
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                />
 
-              <MaterialSelect
-                label="Hora"
-                fullWidth
-                options={[
-                  { value: "", label: "Selecciona una hora" },
-                  { value: "09:00", label: "09:00 AM" },
-                  { value: "10:00", label: "10:00 AM" },
-                  { value: "11:00", label: "11:00 AM" },
-                  { value: "14:00", label: "02:00 PM" },
-                  { value: "15:00", label: "03:00 PM" },
-                  { value: "16:00", label: "04:00 PM" },
-                  { value: "17:00", label: "05:00 PM" },
-                ]}
-                value={formData.time}
-                onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-              />
+                <MaterialSelect
+                  label="Hora"
+                  fullWidth
+                  options={[
+                    { value: "", label: "Seleccionar..." },
+                    { value: "09:00", label: "09:00 AM" },
+                    { value: "10:00", label: "10:00 AM" },
+                    { value: "11:00", label: "11:00 AM" },
+                    { value: "12:00", label: "12:00 PM" },
+                    { value: "14:00", label: "02:00 PM" },
+                    { value: "15:00", label: "03:00 PM" },
+                    { value: "16:00", label: "04:00 PM" },
+                  ]}
+                  value={formData.time}
+                  onChange={(e) => setFormData({ ...formData, time: e.target.value })}
+                />
+              </div>
 
               <MaterialTextField
                 label="Notas adicionales (opcional)"
-                placeholder="Agrega cualquier información relevante..."
+                placeholder="Motivo de la consulta, observaciones..."
                 fullWidth
+                multiline
+                rows={4}
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               />
@@ -275,18 +357,25 @@ export function NewAppointmentPage() {
           )}
 
           {/* Step 5: Confirmation */}
-          {activeStep === 4 && (
+          {activeStep === 5 && (
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold mb-4">Confirmación</h3>
-
+              <h3 className="text-xl font-semibold mb-4">Confirmar Cita</h3>
+              
               <div className="space-y-4">
-                <div className="p-4 bg-muted rounded-xl">
+                <div className="p-4 bg-muted rounded-lg">
+                  <p className="text-sm text-muted-foreground mb-1">Sede</p>
+                  <p className="font-semibold">
+                    {formData.location === "chorrillos" ? "Sede Chorrillos" : "Sede Surco / Barranco"}
+                  </p>
+                </div>
+
+                <div className="p-4 bg-muted rounded-lg">
                   <p className="text-sm text-muted-foreground mb-1">Cliente</p>
                   <p className="font-semibold">{selectedClient?.name}</p>
                   <p className="text-sm text-muted-foreground">{selectedClient?.phone}</p>
                 </div>
 
-                <div className="p-4 bg-muted rounded-xl">
+                <div className="p-4 bg-muted rounded-lg">
                   <p className="text-sm text-muted-foreground mb-1">Mascota</p>
                   <p className="font-semibold">{selectedPet?.name}</p>
                   <p className="text-sm text-muted-foreground">
@@ -294,22 +383,31 @@ export function NewAppointmentPage() {
                   </p>
                 </div>
 
-                <div className="p-4 bg-muted rounded-xl">
+                <div className="p-4 bg-muted rounded-lg">
                   <p className="text-sm text-muted-foreground mb-1">Servicio</p>
-                  <p className="font-semibold capitalize">{formData.service}</p>
-                  <p className="text-sm text-muted-foreground capitalize">{formData.professional.replace("_", " ")}</p>
+                  <p className="font-semibold">{selectedService?.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedService?.duration} • {selectedService?.price}
+                  </p>
                 </div>
 
-                <div className="p-4 bg-muted rounded-xl">
+                <div className="p-4 bg-muted rounded-lg">
                   <p className="text-sm text-muted-foreground mb-1">Fecha y Hora</p>
-                  <p className="font-semibold">{formData.date} a las {formData.time}</p>
-                  <p className="text-sm text-muted-foreground capitalize">Sede {formData.location}</p>
+                  <p className="font-semibold">
+                    {formData.date && new Date(formData.date + 'T00:00:00').toLocaleDateString('es-ES', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </p>
+                  <p className="text-sm text-muted-foreground">{formData.time}</p>
                 </div>
 
                 {formData.notes && (
-                  <div className="p-4 bg-muted rounded-xl">
+                  <div className="p-4 bg-muted rounded-lg">
                     <p className="text-sm text-muted-foreground mb-1">Notas</p>
-                    <p>{formData.notes}</p>
+                    <p className="text-sm">{formData.notes}</p>
                   </div>
                 )}
               </div>
@@ -319,25 +417,25 @@ export function NewAppointmentPage() {
       </MaterialCard>
 
       {/* Navigation Buttons */}
-      <div className="mt-6 flex items-center justify-between">
+      <div className="mt-6 flex justify-between">
         <MaterialButton
-          variant="text"
+          variant="outlined"
           onClick={handleBack}
           disabled={activeStep === 0}
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 mr-2" />
           Anterior
         </MaterialButton>
 
         {activeStep < steps.length - 1 ? (
           <MaterialButton onClick={handleNext}>
             Siguiente
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 ml-2" />
           </MaterialButton>
         ) : (
           <MaterialButton onClick={handleSubmit}>
-            <Check className="w-4 h-4" />
-            Crear Cita
+            <Check className="w-4 h-4 mr-2" />
+            Confirmar cita
           </MaterialButton>
         )}
       </div>
